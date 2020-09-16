@@ -52,17 +52,22 @@ public class CSdict {
             // Split the string into words
             String[] inputs = inputString.trim().split("( |\t)+");
             // Set the command
-            command = inputs[0].toLowerCase().trim();
-            // Remainder of the inputs is the arguments.
-            arguments = Arrays.copyOfRange(inputs, 1, inputs.length);
-
-            System.out.println("The command is: " + command);
-            len = arguments.length;
-            System.out.println("The arguments are: ");
-            for (int i = 0; i < len; i++) {
-                System.out.println("    " + arguments[i]);
-            }
-            System.out.println("Done.");
+//            System.out.println("first " + inputs[0]);
+//            System.out.println("second " + inputs[1]);
+//            System.out.println("third" + inputs[2]);
+            Open open = new Open(inputs[1], inputs[2]);
+            open.connect();
+//            command = inputs[0].toLowerCase().trim();
+//            // Remainder of the inputs is the arguments.
+//            arguments = Arrays.copyOfRange(inputs, 1, inputs.length);
+//
+//            System.out.println("The command is: " + command);
+//            len = arguments.length;
+//            System.out.println("The arguments are: ");
+//            for (int i = 0; i < len; i++) {
+//                System.out.println("    " + arguments[i]);
+//            }
+//            System.out.println("Done.");
 
 
         } catch (IOException exception) {

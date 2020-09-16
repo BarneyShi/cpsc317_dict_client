@@ -1,5 +1,8 @@
 package cs317.a1;
 
+import java.io.*;
+import java.net.*;
+
 public class Open {
     //define server and port
     private String server;
@@ -26,8 +29,21 @@ public class Open {
     public void setPort(String port) {
         this.port = port;
     }
-    //connect to dict server
-    public void connect(){
 
+    //connect to dict server
+    public void connect() throws IOException {
+        //create socket of "dict.org 2628"
+        Socket socket = new Socket("dict.org", 2628);
+        //create outputstream
+        OutputStream outputStream = socket.getOutputStream();
+        PrintWriter printWriter = new PrintWriter(outputStream, true);
+        //get server and port variable from main() then write to dict.org
+        printWriter.println("define " + server + " " + port);
+
+        //read back from dict.server
+        InputStream inputStream = socket.getInputStream();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String res = bufferedReader.readLine();
+        System.out.println(res);
     }
 }
