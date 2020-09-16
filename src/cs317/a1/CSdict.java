@@ -7,8 +7,7 @@ package cs317.a1;
 
 import java.lang.System;
 import java.io.IOException;
-import java.util.Arrays;
-import java.io.BufferedReader;
+
 //
 // This is an implementation of a simplified version of a command
 // line dictionary client. The only argument the program takes is
@@ -55,8 +54,11 @@ public class CSdict {
 //            System.out.println("first " + inputs[0]);
 //            System.out.println("second " + inputs[1]);
 //            System.out.println("third" + inputs[2]);
-            Open open = new Open(inputs[1], inputs[2]);
-            open.connect();
+            Connection connection = new Connection(inputs[1], inputs[2]);
+            connection.connect();
+
+            // Check if socket is connected
+            if(connection.connected) System.out.println("DONE");
 //            command = inputs[0].toLowerCase().trim();
 //            // Remainder of the inputs is the arguments.
 //            arguments = Arrays.copyOfRange(inputs, 1, inputs.length);
