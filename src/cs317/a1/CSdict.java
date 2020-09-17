@@ -47,18 +47,22 @@ public class CSdict {
 
             // Convert the command string to ASII
             String inputString = new String(cmdString, "ASCII");
-
             // Split the string into words
             String[] inputs = inputString.trim().split("( |\t)+");
+
             // Set the command
-//            System.out.println("first " + inputs[0]);
-//            System.out.println("second " + inputs[1]);
-//            System.out.println("third" + inputs[2]);
             Connection connection = new Connection(inputs[1], inputs[2]);
             connection.connect();
 
             // Check if socket is connected
-            if(connection.connected) System.out.println("DONE");
+            while(connection.connected){
+                byte command_string[] = new byte[MAX_LEN];
+                System.out.print("csdict> ");
+                System.in.read(command_string);
+                String inputs_string = new String(command_string, "ASCII");
+                String[] inputs_arr = inputs_string.trim().split("( |\t)+");
+                connection.command(inputs_arr[0], inputs_arr[1]);
+            }
 //            command = inputs[0].toLowerCase().trim();
 //            // Remainder of the inputs is the arguments.
 //            arguments = Arrays.copyOfRange(inputs, 1, inputs.length);
