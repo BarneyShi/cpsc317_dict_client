@@ -23,7 +23,7 @@ public class Connection {
         this.socket = null;
 
         // Create socket of "dict.org 2628"
-        socket = new Socket("dict.org", 2628);
+        socket = new Socket(server, Integer.parseInt(port));
         socket.setKeepAlive(true);
 
         //
@@ -35,27 +35,8 @@ public class Connection {
         bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
     }
 
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
     // Connect to dict server
     public void connect() throws IOException {
-
-        // Create outputstream
-
 
         // Get server and port variable from main() then write to dict.org
         printWriter.println("define " + server + " " + port);
@@ -70,14 +51,39 @@ public class Connection {
 
     }
 
-    //Send commands after connection established
-    public void command(String arg1, String arg2) throws IOException {
+    /**
+     *
+     * @throws IOException
+     */
+    // Send commands after connection established
+    public void showDB() throws IOException {
         // Create outputstream
-        printWriter.println(arg1 + " " + arg2);
+        printWriter.println("show db");
         String res;
         while( (res = bufferedReader.readLine()) != null){
             System.out.println(res);
             if(res.contains("250 ok")) break;
         }
     }
+
+    public void close() throws IOException {
+        printWriter.println("quit");
+        String res;
+
+    }
+
+    public void quit() throws IOException {
+        printWriter.println("quit");
+        String res;
+        while((res = bufferedReader.readLine()) != null){
+            if(res.contains("221")) {
+                res = "> " + res;
+                System.out.println(res);
+            }
+        }
+
+    }
+
+
+
 }

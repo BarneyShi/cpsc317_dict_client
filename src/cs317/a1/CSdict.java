@@ -21,6 +21,7 @@ public class CSdict {
     private static String command;
     private static String[] arguments;
 
+
     public static void main(String [] args) {
         byte cmdString[] = new byte[MAX_LEN];
         int len;
@@ -50,19 +51,49 @@ public class CSdict {
             // Split the string into words
             String[] inputs = inputString.trim().split("( |\t)+");
 
-            // Set the command
-            Connection connection = new Connection(inputs[1], inputs[2]);
-            connection.connect();
+            // "open xx xx" inovke conenct()
+            Connection connection = null;
+            if(inputs[0].equals("open")) {
+                connection = new Connection(inputs[1], inputs[2]);
+                connection.connect();
+            }
+
+            // Instantiate Search() so we could use later in while loop
+            Search search = null;
 
             // Check if socket is connected
-            while(connection.connected){
+            while(connection.connected) {
                 byte command_string[] = new byte[MAX_LEN];
                 System.out.print("csdict> ");
                 System.in.read(command_string);
                 String inputs_string = new String(command_string, "ASCII");
                 String[] inputs_arr = inputs_string.trim().split("( |\t)+");
-                connection.command(inputs_arr[0], inputs_arr[1]);
+                String cmd = inputs_arr[1].toLowerCase();
+                // ==================================================================
+                // === Invoke different action based on inputs ======================
+                // ==================================================================
+                if(cmd.equals("dict")) {
+                    connection.showDB();
+                } else if(cmd.equals("set")) {
+                    if(search == null) search = new Search(connection);
+                    search.dictSet = inputs_arr[1];
+                    search.dictIsSet = true;
+                } else if(cmd.equals("define")) {
+                    if(search == null) search = new Search(connection);
+                    search.define(search, inputs_arr[1]);
+                } else if(cmd.equals("match")) {
+                    if(search == null) search = new Search(connection);
+                    search.match(search, inputs_arr[1]);
+                } else if(cmd.equals("prefixmatch")) {
+                    if(search == null) search = new Search(connection);
+                    search.prefixMatch(search, inputs_arr[1]);
+                }
             }
+
+            // Operation for connected i.e Close() and Quite()
+           // while()
+
+
 //            command = inputs[0].toLowerCase().trim();
 //            // Remainder of the inputs is the arguments.
 //            arguments = Arrays.copyOfRange(inputs, 1, inputs.length);
@@ -80,6 +111,7 @@ public class CSdict {
             System.err.println("998 Input error while reading commands, terminating.");
             System.exit(-1);
         }
+
     }
 }
 
