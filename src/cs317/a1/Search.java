@@ -31,6 +31,12 @@ public class Search {
         while((res= connection.bufferedReader.readLine()) != null) {
             // Print dict name before each definition
             if(res.contains("550")) continue;
+            if(res.contains("150")){
+                res = "<-- " + res;
+                System.out.println(res);
+                continue;
+
+            }
             if(res.contains("151")){
                 // Print @ dict name
                 String[] arr = res.trim().split("( |\t)+");
@@ -41,27 +47,42 @@ public class Search {
             }
 
             // No definition then seek matches
+            String match_res = "";
             if(res.contains("552")) {
                 res = "***No definition found***";
+                System.out.println(res);
+
+                // seek matches
                 String setDict = search.dictIsSet ? search.dictSet:"*";
                 String query_m = "match " + setDict + " . " + word;
                 connection.printWriter.println(query_m);
-                String match_res;
                 while((match_res = connection.bufferedReader.readLine()) != null) {
-                    if(match_res.contains("152")) continue;
+                    if(match_res.contains("152")) {
+                        match_res = "<-- " + match_res;
+                        System.out.println(match_res);
+                        continue;
+                    }
                     if(match_res.contains("552")){
-                        res = res + "\n" + "***No matches found***";
+                        match_res = "***No matches found***";
+                        System.out.println(match_res);
                         break;
                     }
-                    res = res + "\n" + match_res;
                     if(match_res.contains("250")){
+                        match_res = "<-- " + match_res;
+                        System.out.println(match_res);
                         break;
                     }
+                    System.out.println(match_res);
                 }
+                if(match_res.contains("No matches") || match_res.contains("250 ok")) break;
             }
+            if(res.contains("250 ok")) {
+                res = "<-- " + res;
+                System.out.println(res);
+                break;
+            };
+            if(match_res.contains("No matches")) break;
             System.out.println(res);
-            if(res.contains("250 ok")) break;
-            if(res.contains("No matches")) break;
         }
     }
 
@@ -86,10 +107,10 @@ public class Search {
                 continue;
             }
             if(res.contains("152")) {
-                res = "> " + res;
+                res = "<-- " + res;
             }
             if(res.contains("250 ok")) {
-                res = "> " + res;
+                res = "<-- " + res;
                 System.out.println(res);
                 break;
             }
@@ -116,13 +137,13 @@ public class Search {
                 break;
             }
             if(res.contains("152")) {
-                res = "> " + res;
+                res = "<-- " + res;
             }
             if(res.contains("550")) {
                 continue;
             }
             if(res.contains("250 ok")) {
-                res = "> " + res;
+                res = "<-- " + res;
                 System.out.println(res);
                 break;
             }

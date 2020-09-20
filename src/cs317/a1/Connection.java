@@ -46,7 +46,13 @@ public class Connection {
 
         // Read back from dict.server
 
-        String res = bufferedReader.readLine();
+        String res;
+        while((res = bufferedReader.readLine()) != null){
+            if(res.contains("220")){
+                res = "<-- " + res;
+                break;
+            }
+        }
         System.out.println(res);
 
     }
@@ -61,8 +67,12 @@ public class Connection {
         printWriter.println("show db");
         String res;
         while( (res = bufferedReader.readLine()) != null){
+            if(res.contains("250 ok")) {
+                res = "<-- " + res;
+                System.out.println(res);
+                break;
+            }
             System.out.println(res);
-            if(res.contains("250 ok")) break;
         }
     }
 
@@ -77,7 +87,7 @@ public class Connection {
         String res;
         while((res = bufferedReader.readLine()) != null){
             if(res.contains("221")) {
-                res = "> " + res;
+                res = "<-- " + res;
                 System.out.println(res);
             }
         }

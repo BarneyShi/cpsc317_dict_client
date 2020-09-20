@@ -43,52 +43,59 @@ public class CSdict {
         // Example code to read command line input and extract arguments.
 
         try {
-            System.out.print("csdict> ");
-            System.in.read(cmdString);
-
-            // Convert the command string to ASII
-            String inputString = new String(cmdString, "ASCII");
-            // Split the string into words
-            String[] inputs = inputString.trim().split("( |\t)+");
-
-            // "open xx xx" inovke conenct()
-            Connection connection = null;
-            if(inputs[0].equals("open")) {
-                connection = new Connection(inputs[1], inputs[2]);
-                connection.connect();
-            }
-
-            // Instantiate Search() so we could use later in while loop
-            Search search = null;
-
-            // Check if socket is connected
-            while(connection.connected) {
-                byte command_string[] = new byte[MAX_LEN];
+            while(true){
                 System.out.print("csdict> ");
-                System.in.read(command_string);
-                String inputs_string = new String(command_string, "ASCII");
-                String[] inputs_arr = inputs_string.trim().split("( |\t)+");
-                String cmd = inputs_arr[1].toLowerCase();
-                // ==================================================================
-                // === Invoke different action based on inputs ======================
-                // ==================================================================
-                if(cmd.equals("dict")) {
-                    connection.showDB();
-                } else if(cmd.equals("set")) {
-                    if(search == null) search = new Search(connection);
-                    search.dictSet = inputs_arr[1];
-                    search.dictIsSet = true;
-                } else if(cmd.equals("define")) {
-                    if(search == null) search = new Search(connection);
-                    search.define(search, inputs_arr[1]);
-                } else if(cmd.equals("match")) {
-                    if(search == null) search = new Search(connection);
-                    search.match(search, inputs_arr[1]);
-                } else if(cmd.equals("prefixmatch")) {
-                    if(search == null) search = new Search(connection);
-                    search.prefixMatch(search, inputs_arr[1]);
+                System.in.read(cmdString);
+
+                // Convert the command string to ASII
+                String inputString = new String(cmdString, "ASCII");
+                // Split the string into words
+                String[] inputs = inputString.trim().split("( |\t)+");
+
+                // "open xx xx" inovke conenct()
+                Connection connection = null;
+                if(inputs[0].equals("open")) {
+                    connection = new Connection(inputs[1], inputs[2]);
+                    connection.connect();
+                }
+
+                // Instantiate Search() so we could use later in while loop
+                Search search = null;
+
+                // Check if socket is connected
+                while(connection.connected) {
+                    byte command_string[] = new byte[MAX_LEN];
+                    System.out.print("csdict> ");
+                    System.in.read(command_string);
+                    String inputs_string = new String(command_string, "ASCII");
+                    String[] inputs_arr = inputs_string.trim().split("( |\t)+");
+                    String cmd = inputs_arr[0].toLowerCase();
+                    // ==================================================================
+                    // === Invoke different action based on inputs ======================
+                    // ==================================================================
+                    if(cmd.equals("dict")) {
+                        connection.showDB();
+                    } else if(cmd.equals("set")) {
+                        if(search == null) search = new Search(connection);
+                        search.dictSet = inputs_arr[1];
+                        search.dictIsSet = true;
+                    } else if(cmd.equals("define")) {
+                        if(search == null) search = new Search(connection);
+                        search.define(search, inputs_arr[1]);
+                    } else if(cmd.equals("match")) {
+                        if(search == null) search = new Search(connection);
+                        search.match(search, inputs_arr[1]);
+                    } else if(cmd.equals("prefixmatch")) {
+                        if(search == null) search = new Search(connection);
+                        search.prefixMatch(search, inputs_arr[1]);
+                    } else if(cmd.equals("close")){
+                        search = null;
+                        connection.connected = false;
+                        break;
+                    }
                 }
             }
+
 
             // Operation for connected i.e Close() and Quite()
            // while()
