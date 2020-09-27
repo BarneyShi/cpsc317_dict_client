@@ -1,5 +1,5 @@
 package cs317.a1;
-
+import cs317.a1.Connection;
 import java.io.IOException;
 import java.util.Arrays;
 

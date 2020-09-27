@@ -4,9 +4,13 @@ package cs317.a1;
 // illustrates how to read and partially parse the input typed by the user.
 // Although your main class has to be in this file, there is no requirement that you
 // use this template or hav all or your classes in this file.
-
+import cs317.a1.Search;
+import cs317.a1.Connection;
 import java.lang.System;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 //
 // This is an implementation of a simplified version of a command
@@ -16,6 +20,8 @@ import java.io.IOException;
 public class CSdict {
     static final int MAX_LEN = 255;
     static Boolean debugOn = false;
+    static List<String> validCommands;
+    static List<String> validDB;
 
     private static final int PERMITTED_ARGUMENT_COUNT = 1;
     private static String command;
@@ -25,26 +31,27 @@ public class CSdict {
     public static void main(String [] args) {
         byte cmdString[] = new byte[MAX_LEN];
         int len;
-        // Verify command line arguments
+        validCommands = Arrays.asList("open, dict", "set", "define", "match", "prefixmatch");
+        validDB = new ArrayList<String>();
 
+        // Verify command line arguments
         if (args.length == PERMITTED_ARGUMENT_COUNT) {
             debugOn = args[0].equals("-d");
             if (debugOn) {
                 System.out.println("Debugging output enabled");
             } else {
-                System.out.println("997 Invalid command line option - Only -d is allowed");
+                System.out.println("> 997 Invalid command line option - Only -d is allowed");
                 return;
             }
         } else if (args.length > PERMITTED_ARGUMENT_COUNT) {
-            System.out.println("996 Too many command line options - Only -d is allowed");
+            System.out.println("> 996 Too many command line options - Only -d is allowed");
             return;
         }
-
-        // Example code to read command line input and extract arguments.
 
         try {
             while(true){
                 System.out.print("csdict> ");
+                cmdString = new byte[MAX_LEN];
                 System.in.read(cmdString);
 
                 // Convert the command string to ASII
@@ -54,9 +61,35 @@ public class CSdict {
 
                 // "open xx xx" inovke conenct()
                 Connection connection = null;
-                if(inputs[0].equals("open")) {
+                if(inputs[0].toLowerCase().equals("open")) {
+                    // 901 Error
+                    if(inputs.length != 3) {
+                        if(debugOn) System.out.println("> 901 Incorrect number of arguments.");
+                        continue;
+                    }
+                    // 902 error
+                    if(!isPureNums(inputs[2])) {
+                        if(debugOn) System.out.println("> 902 Invalid argument.");
+                        continue;
+                    }
                     connection = new Connection(inputs[1], inputs[2]);
                     connection.connect();
+                } else {
+                    // QUIT
+                    if(inputs[0].equals("quit")) {
+                        System.out.println("QAQ Bye!");
+                        return;
+                    }
+                    // Invalid command AKA not 'OPEN'
+                    if(debugOn) {
+                        // 903 Error
+                        if(validCommands.contains(inputs[0])) {
+                            System.out.println("> 903 Supplied command not expected at this time.");
+                            continue;
+                        }
+                        if(debugOn) System.out.println("> 900 Invalid command.");
+                        continue;
+                    }
                 }
 
                 // Instantiate Search() so we could use later in while loop
@@ -77,9 +110,30 @@ public class CSdict {
                         connection.showDB();
                     } else if(cmd.equals("set")) {
                         if(search == null) search = new Search(connection);
-                        search.dictSet = inputs_arr[1];
-                        search.dictIsSet = true;
+                        /*
+                        =======================
+                         Get list of valid DICT
+                         */
+                        getListDB(connection);
+                        /*
+                        =======================
+                         */
+                        if(validDB.contains(inputs_arr[1])) {
+                            search.dictSet = inputs_arr[1];
+                            search.dictIsSet = true;
+                        } else if(inputs_arr.length != 2) {
+                            if(debugOn) System.out.println("> 901 Incorrect number of arguments.");
+                            continue;
+                        } else {
+                            if(debugOn) System.out.println("> 902 Invalid argument.");
+                            continue;
+                        }
                     } else if(cmd.equals("define")) {
+                        // 901 Error
+                        if(inputs_arr.length != 2) {
+                            if(debugOn) System.out.println("> 901 Incorrect number of arguments.");
+                            continue;
+                        }
                         if(search == null) search = new Search(connection);
                         search.define(search, inputs_arr[1]);
                     } else if(cmd.equals("match")) {
@@ -91,34 +145,43 @@ public class CSdict {
                     } else if(cmd.equals("close")){
                         search = null;
                         connection.connected = false;
-                        break;
+                        continue;
+                    } else if(cmd.equals("quit")) {
+                        connection.quit();
+                        return;
                     }
                 }
             }
-
-
-            // Operation for connected i.e Close() and Quite()
-           // while()
-
-
-//            command = inputs[0].toLowerCase().trim();
-//            // Remainder of the inputs is the arguments.
-//            arguments = Arrays.copyOfRange(inputs, 1, inputs.length);
-//
-//            System.out.println("The command is: " + command);
-//            len = arguments.length;
-//            System.out.println("The arguments are: ");
-//            for (int i = 0; i < len; i++) {
-//                System.out.println("    " + arguments[i]);
-//            }
-//            System.out.println("Done.");
-
-
         } catch (IOException exception) {
-            System.err.println("998 Input error while reading commands, terminating.");
+            if (debugOn) System.err.println("> 998 Input error while reading commands, terminating.");
+            System.exit(-1);
+        } catch (Exception e) {
+            if(debugOn) System.out.println("> 999 Processing error. yyyy. ");
             System.exit(-1);
         }
+    }
 
+    // Static helper method checking if string is numeric
+    public static boolean isPureNums(String str) {
+        for (char c: str.toCharArray()) {
+            if(!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Get list of valid bd
+    public static void getListDB(Connection connection) throws IOException {
+        connection.printWriter.println("show db");
+        String res;
+        while( (res = connection.bufferedReader.readLine()) != null){
+            if(res.contains("250 ok")) {
+                break;
+            }
+            String val = res.split(" ", 2)[0];
+            validDB.add(val);
+        }
     }
 }
 

@@ -1,8 +1,9 @@
 package cs317.a1;
 
-
+import cs317.a1.Search;
 import java.io.*;
 import java.net.*;
+
 
 public class Connection {
     // Define server and port
@@ -83,6 +84,7 @@ public class Connection {
     }
 
     public void quit() throws IOException {
+        connected = !connected;
         printWriter.println("quit");
         String res;
         while((res = bufferedReader.readLine()) != null){
@@ -91,7 +93,7 @@ public class Connection {
                 System.out.println(res);
             }
         }
-
+        System.out.println("QAQ Bye!");
     }
 
 

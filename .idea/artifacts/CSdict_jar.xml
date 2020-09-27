@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CSdict:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CSdict_jar</output-path>
+    <root id="archive" name="CSdict.jar">
+      <element id="module-output" name="CSdict" />
+    </root>
+  </artifact>
+</component>
