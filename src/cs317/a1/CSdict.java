@@ -31,7 +31,7 @@ public class CSdict {
     public static void main(String [] args) {
         byte cmdString[] = new byte[MAX_LEN];
         int len;
-        validCommands = Arrays.asList("open, dict", "set", "define", "match", "prefixmatch");
+        validCommands = Arrays.asList("open", "dict", "set", "define", "match", "prefixmatch");
         validDB = new ArrayList<String>();
 
         // Verify command line arguments
@@ -145,7 +145,7 @@ public class CSdict {
                     } else if(cmd.equals("close")){
                         search = null;
                         connection.connected = false;
-                        continue;
+                        break;
                     } else if(cmd.equals("quit")) {
                         connection.quit();
                         return;
