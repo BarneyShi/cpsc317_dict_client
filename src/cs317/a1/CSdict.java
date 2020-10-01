@@ -8,6 +8,7 @@ import cs317.a1.Search;
 import cs317.a1.Connection;
 import java.lang.System;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,11 +41,11 @@ public class CSdict {
             if (debugOn) {
                 System.out.println("Debugging output enabled");
             } else {
-                System.out.println("> 997 Invalid command line option - Only -d is allowed");
+                System.out.println("997 Invalid command line option - Only -d is allowed");
                 return;
             }
         } else if (args.length > PERMITTED_ARGUMENT_COUNT) {
-            System.out.println("> 996 Too many command line options - Only -d is allowed");
+            System.out.println("996 Too many command line options - Only -d is allowed");
             return;
         }
 
@@ -64,30 +65,35 @@ public class CSdict {
                 if(inputs[0].toLowerCase().equals("open")) {
                     // 901 Error
                     if(inputs.length != 3) {
-                        if(debugOn) System.out.println("> 901 Incorrect number of arguments.");
+                        if(debugOn) System.out.println("901 Incorrect number of arguments.");
                         continue;
                     }
                     // 902 error
                     if(!isPureNums(inputs[2])) {
-                        if(debugOn) System.out.println("> 902 Invalid argument.");
+                        if(debugOn) System.out.println("902 Invalid argument.");
                         continue;
                     }
                     connection = new Connection(inputs[1], inputs[2]);
-                    connection.connect();
+                    if(connection.connect()) {
+
+                    } else {
+                        continue;
+                    }
+
                 } else {
                     // QUIT
                     if(inputs[0].equals("quit")) {
-                        System.out.println("QAQ Bye!");
+                        System.out.println("> QUIT");
                         return;
                     }
                     // Invalid command AKA not 'OPEN'
                     if(debugOn) {
                         // 903 Error
                         if(validCommands.contains(inputs[0])) {
-                            System.out.println("> 903 Supplied command not expected at this time.");
+                            System.out.println("903 Supplied command not expected at this time.");
                             continue;
                         }
-                        if(debugOn) System.out.println("> 900 Invalid command.");
+                        if(debugOn) System.out.println("900 Invalid command.");
                         continue;
                     }
                 }
@@ -122,16 +128,16 @@ public class CSdict {
                             search.dictSet = inputs_arr[1];
                             search.dictIsSet = true;
                         } else if(inputs_arr.length != 2) {
-                            if(debugOn) System.out.println("> 901 Incorrect number of arguments.");
+                            if(debugOn) System.out.println("901 Incorrect number of arguments.");
                             continue;
                         } else {
-                            if(debugOn) System.out.println("> 902 Invalid argument.");
+                            if(debugOn) System.out.println("902 Invalid argument.");
                             continue;
                         }
                     } else if(cmd.equals("define")) {
                         // 901 Error
                         if(inputs_arr.length != 2) {
-                            if(debugOn) System.out.println("> 901 Incorrect number of arguments.");
+                            if(debugOn) System.out.println("901 Incorrect number of arguments.");
                             continue;
                         }
                         if(search == null) search = new Search(connection);
@@ -152,11 +158,14 @@ public class CSdict {
                     }
                 }
             }
+        } catch (SocketTimeoutException e) {
+            System.out.println("902");
+            return;
         } catch (IOException exception) {
-            if (debugOn) System.err.println("> 998 Input error while reading commands, terminating.");
+            if (debugOn) System.err.println("998 Input error while reading commands, terminating.");
             System.exit(-1);
         } catch (Exception e) {
-            if(debugOn) System.out.println("> 999 Processing error. yyyy. ");
+            if(debugOn) System.out.println("999 Processing error. yyyy. ");
             System.exit(-1);
         }
     }
@@ -182,6 +191,7 @@ public class CSdict {
             String val = res.split(" ", 2)[0];
             validDB.add(val);
         }
+        validDB.add("*");
     }
 }
 

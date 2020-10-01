@@ -32,6 +32,7 @@ public class Search {
             // Print dict name before each definition
             if(res.contains("550")) continue;
             if(res.contains("150")){
+                System.out.println("> DEFINE "+ dictSet + " airplane");
                 res = "<-- " + res;
                 System.out.println(res);
                 continue;
@@ -39,6 +40,7 @@ public class Search {
             }
             if(res.contains("151")){
                 // Print @ dict name
+                System.out.println("<-- " + res);
                 String[] arr = res.trim().split("( |\t)+");
                 arr = Arrays.copyOfRange(arr, 2, arr.length);
                 res = Arrays.toString(arr).replace("[", "");
@@ -94,11 +96,12 @@ public class Search {
      */
     public void match(Search search, String word) throws IOException {
         String setDict = search.dictIsSet ? search.dictSet:"*";
-        String query = "match " + setDict + " . " + word;
+        String query = "match " + setDict + " exact " + word;
         connection.printWriter.println(query);
         String res;
         while((res = connection.bufferedReader.readLine()) != null) {
             if(res.contains("552")) {
+                System.out.println(res);
                 res = "*****No matching word(s) found*****";
                 System.out.println(res);
                 break;
@@ -107,6 +110,7 @@ public class Search {
                 continue;
             }
             if(res.contains("152")) {
+                System.out.println("> MATCH " + setDict + " exact " + word);
                 res = "<-- " + res;
             }
             if(res.contains("250 ok")) {
@@ -137,6 +141,7 @@ public class Search {
                 break;
             }
             if(res.contains("152")) {
+                System.out.println("> MATCH " + dictSet + " PREFIX " + word);
                 res = "<-- " + res;
             }
             if(res.contains("550")) {

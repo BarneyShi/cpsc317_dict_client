@@ -17,28 +17,33 @@ public class Connection {
     public BufferedReader bufferedReader;
 
     // Constructor
-    public Connection(String server, String port) throws IOException {
+    public Connection(String server, String port) throws IOException, SocketTimeoutException{
         this.server = server;
         this.port = port;
         this.connected = false;
         this.socket = null;
 
         // Create socket of "dict.org 2628"
-        socket = new Socket(server, Integer.parseInt(port));
+        socket = new Socket();
         socket.setKeepAlive(true);
 
         //
-        outputStream = socket.getOutputStream();
-        printWriter = new PrintWriter(outputStream, true);
 
-        //
-        inputStream = socket.getInputStream();
-        bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
     }
 
     // Connect to dict server
-    public void connect() throws IOException {
-
+    public boolean connect() throws IOException {
+        try{
+            socket.connect(new InetSocketAddress(server, Integer.parseInt(port)), 5*1000);
+        } catch (SocketTimeoutException e) {
+            System.out.println("920 Control connection to " + server + " on port " + Integer.parseInt(port) + " failed to open");
+            return false;
+        }
+        outputStream = socket.getOutputStream();
+        printWriter = new PrintWriter(outputStream, true);
+        //
+        inputStream = socket.getInputStream();
+        bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         // Get server and port variable from main() then write to dict.org
         printWriter.println("define " + server + " " + port);
 
@@ -55,7 +60,7 @@ public class Connection {
             }
         }
         System.out.println(res);
-
+        return true;
     }
 
     /**
@@ -89,11 +94,11 @@ public class Connection {
         String res;
         while((res = bufferedReader.readLine()) != null){
             if(res.contains("221")) {
+                System.out.println("> QUIT");
                 res = "<-- " + res;
                 System.out.println(res);
             }
         }
-        System.out.println("QAQ Bye!");
     }
 
 
