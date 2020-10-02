@@ -32,6 +32,7 @@ public class Search {
             // Print dict name before each definition
             if(res.contains("550")) continue;
             if(res.contains("150")){
+                if(!CSdict.debugOn) continue;
                 System.out.println("> DEFINE "+ dictSet + " airplane");
                 res = "<-- " + res;
                 System.out.println(res);
@@ -40,7 +41,7 @@ public class Search {
             }
             if(res.contains("151")){
                 // Print @ dict name
-                System.out.println("<-- " + res);
+                if(CSdict.debugOn)System.out.println("<-- " + res);
                 String[] arr = res.trim().split("( |\t)+");
                 arr = Arrays.copyOfRange(arr, 2, arr.length);
                 res = Arrays.toString(arr).replace("[", "");
@@ -61,6 +62,7 @@ public class Search {
                 while((match_res = connection.bufferedReader.readLine()) != null) {
                     if(match_res.contains("152")) {
                         match_res = "<-- " + match_res;
+                        if(!CSdict.debugOn) continue;
                         System.out.println(match_res);
                         continue;
                     }
@@ -70,6 +72,7 @@ public class Search {
                         break;
                     }
                     if(match_res.contains("250")){
+                        if(!CSdict.debugOn) break;
                         match_res = "<-- " + match_res;
                         System.out.println(match_res);
                         break;
@@ -79,6 +82,7 @@ public class Search {
                 if(match_res.contains("No matches") || match_res.contains("250 ok")) break;
             }
             if(res.contains("250 ok")) {
+                if(!CSdict.debugOn) break;
                 res = "<-- " + res;
                 System.out.println(res);
                 break;
@@ -110,10 +114,12 @@ public class Search {
                 continue;
             }
             if(res.contains("152")) {
+                if(!CSdict.debugOn) continue;
                 System.out.println("> MATCH " + setDict + " exact " + word);
                 res = "<-- " + res;
             }
             if(res.contains("250 ok")) {
+                if(!CSdict.debugOn) break;
                 res = "<-- " + res;
                 System.out.println(res);
                 break;
@@ -141,6 +147,7 @@ public class Search {
                 break;
             }
             if(res.contains("152")) {
+                if(!CSdict.debugOn) continue;
                 System.out.println("> MATCH " + dictSet + " PREFIX " + word);
                 res = "<-- " + res;
             }
@@ -148,6 +155,7 @@ public class Search {
                 continue;
             }
             if(res.contains("250 ok")) {
+                if(!CSdict.debugOn) break;
                 res = "<-- " + res;
                 System.out.println(res);
                 break;

@@ -36,7 +36,7 @@ public class Connection {
         try{
             socket.connect(new InetSocketAddress(server, Integer.parseInt(port)), 5*1000);
         } catch (SocketTimeoutException e) {
-            System.out.println("920 Control connection to " + server + " on port " + Integer.parseInt(port) + " failed to open");
+            System.out.println("999 Processing error. Timed out while waiting for a response.");
             return false;
         }
         outputStream = socket.getOutputStream();
@@ -55,10 +55,14 @@ public class Connection {
         String res;
         while((res = bufferedReader.readLine()) != null){
             if(res.contains("220")){
+                if(!CSdict.debugOn) {
+                    break;
+                }
                 res = "<-- " + res;
                 break;
             }
         }
+        if(!CSdict.debugOn) return true;
         System.out.println(res);
         return true;
     }
@@ -85,7 +89,13 @@ public class Connection {
     public void close() throws IOException {
         printWriter.println("quit");
         String res;
-
+        while((res = bufferedReader.readLine()) != null){
+            if(res.contains("221") && CSdict.debugOn) {
+                System.out.println("> QUIT");
+                res = "<-- " + res;
+                System.out.println(res);
+            }
+        }
     }
 
     public void quit() throws IOException {
@@ -93,7 +103,7 @@ public class Connection {
         printWriter.println("quit");
         String res;
         while((res = bufferedReader.readLine()) != null){
-            if(res.contains("221")) {
+            if(res.contains("221") && CSdict.debugOn) {
                 System.out.println("> QUIT");
                 res = "<-- " + res;
                 System.out.println(res);

@@ -65,12 +65,12 @@ public class CSdict {
                 if(inputs[0].toLowerCase().equals("open")) {
                     // 901 Error
                     if(inputs.length != 3) {
-                        if(debugOn) System.out.println("901 Incorrect number of arguments.");
+                        System.out.println("901 Incorrect number of arguments.");
                         continue;
                     }
                     // 902 error
                     if(!isPureNums(inputs[2])) {
-                        if(debugOn) System.out.println("902 Invalid argument.");
+                        System.out.println("902 Invalid argument.");
                         continue;
                     }
                     connection = new Connection(inputs[1], inputs[2]);
@@ -83,19 +83,16 @@ public class CSdict {
                 } else {
                     // QUIT
                     if(inputs[0].equals("quit")) {
-                        System.out.println("> QUIT");
                         return;
                     }
                     // Invalid command AKA not 'OPEN'
-                    if(debugOn) {
                         // 903 Error
                         if(validCommands.contains(inputs[0])) {
                             System.out.println("903 Supplied command not expected at this time.");
                             continue;
                         }
-                        if(debugOn) System.out.println("900 Invalid command.");
+                        System.out.println("900 Invalid command.");
                         continue;
-                    }
                 }
 
                 // Instantiate Search() so we could use later in while loop
@@ -128,16 +125,16 @@ public class CSdict {
                             search.dictSet = inputs_arr[1];
                             search.dictIsSet = true;
                         } else if(inputs_arr.length != 2) {
-                            if(debugOn) System.out.println("901 Incorrect number of arguments.");
+                            System.out.println("901 Incorrect number of arguments.");
                             continue;
                         } else {
-                            if(debugOn) System.out.println("902 Invalid argument.");
+                            System.out.println("902 Invalid argument.");
                             continue;
                         }
                     } else if(cmd.equals("define")) {
                         // 901 Error
                         if(inputs_arr.length != 2) {
-                            if(debugOn) System.out.println("901 Incorrect number of arguments.");
+                            System.out.println("901 Incorrect number of arguments.");
                             continue;
                         }
                         if(search == null) search = new Search(connection);
@@ -151,6 +148,7 @@ public class CSdict {
                     } else if(cmd.equals("close")){
                         search = null;
                         connection.connected = false;
+                        connection.close();
                         break;
                     } else if(cmd.equals("quit")) {
                         connection.quit();
@@ -162,10 +160,10 @@ public class CSdict {
             System.out.println("902");
             return;
         } catch (IOException exception) {
-            if (debugOn) System.err.println("998 Input error while reading commands, terminating.");
+            System.err.println("998 Input error while reading commands, terminating.");
             System.exit(-1);
         } catch (Exception e) {
-            if(debugOn) System.out.println("999 Processing error. yyyy. ");
+            System.out.println("999 Processing error. yyyy. ");
             System.exit(-1);
         }
     }
